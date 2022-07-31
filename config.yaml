@@ -1,0 +1,17 @@
+MAN: 
+  MEAT: 375  # Грамм
+  CUCUMBER: 150  # Грамм
+  TOMATO: 100  # Грамм
+  POTATO: 200  # Грамм
+  BREAD: 15  # % от батона
+  SAUCE: 15  # % от пачки
+
+WOMAN:
+  MEAT: 275  # Грамм
+  CUCUMBER: 150  # Грамм
+  TOMATO: 100  # Грамм
+  POTATO: 175  # Грамм
+  BREAD: 15  # % от батона
+  SAUCE: 15  # % от пачки
+
+COAL: 500  # Грамм

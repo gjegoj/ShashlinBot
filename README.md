@@ -25,4 +25,4 @@ $ python main.py
 
 1. **04/June/2022**. ShashlinBot_v1. Pushed to Github.
 2. **15/July/2022**. ShashlinBot_v1.1. Changed config. Added duration coefficient. Created body type coefficient and /help command.
-3. **15/Aug/2022**. ShashlinBot_v1.2. Changed party dictionary - added chat_id as key.
+3. **15/Aug/2022**. ShashlinBot_v1.2. Changed party dictionary - added chat_id as key. Fixed 0 men and 0 women.

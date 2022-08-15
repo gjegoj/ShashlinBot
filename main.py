@@ -21,6 +21,9 @@ def main(party_dict, cfg=config):
 
     meat, cucumber, tomato, potato, bread, sauce = (0, 0, 0, 0, 0, 0)
 
+    if party_dict['men'] + party_dict['women'] == 0:
+        return '🤨🤨🤨 Эмм... 😑😑😑'
+
     for key, value in party_dict_convert(party_dict).items():
 
         meat     += get_meat(cfg[value]['MEAT'], duration=party_dict['duration'])

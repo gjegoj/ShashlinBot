@@ -17,29 +17,31 @@ with open(CONFIG_PATH, "r") as stream:
 
 party = dict()
 
-def main(party, cfg=config):
+def main(party_dict, cfg=config):
 
     meat, cucumber, tomato, potato, bread, sauce = (0, 0, 0, 0, 0, 0)
 
-    for key, value in party_dict_convert(party).items():
+    for key, value in party_dict_convert(party_dict).items():
 
-        meat     += get_meat(cfg[value]['MEAT'], duration=party['duration'])
-        cucumber += get_cucumber(cfg[value]['CUCUMBER'], duration=party['duration'])
-        tomato   += get_tomato(cfg[value]['TOMATO'], duration=party['duration'])
-        potato   += get_potato(cfg[value]['POTATO'], duration=party['duration'])
-        bread    += get_bread(cfg[value]['BREAD'], duration=party['duration'])
-        sauce    += get_sauce(cfg[value]['SAUCE'], duration=party['duration'])
+        meat     += get_meat(cfg[value]['MEAT'], duration=party_dict['duration'])
+        cucumber += get_cucumber(cfg[value]['CUCUMBER'], duration=party_dict['duration'])
+        tomato   += get_tomato(cfg[value]['TOMATO'], duration=party_dict['duration'])
+        potato   += get_potato(cfg[value]['POTATO'], duration=party_dict['duration'])
+        bread    += get_bread(cfg[value]['BREAD'], duration=party_dict['duration'])
+        sauce    += get_sauce(cfg[value]['SAUCE'], duration=party_dict['duration'])
 
-    print(
-        f"""
-        meat: {meat}
-        cucumber: {cucumber}
-        tomato: {tomato}
-        potato: {potato}
-        bread: {bread}
-        sauce: {sauce}
-        """
-        )
+    # print(
+    #     f"""
+    #     meat: {meat}
+    #     cucumber: {cucumber}
+    #     tomato: {tomato}
+    #     potato: {potato}
+    #     bread: {bread}
+    #     sauce: {sauce}
+    #     """
+    #     )
+    
+    print(party)
 
     meat     = convert_meat(meat)
     cucumber = convert_cucumber(cucumber)
@@ -75,7 +77,8 @@ def help(message):
 # Handle duration
 @bot.message_handler(commands=['start'])
 def start(message):
-    party.clear()
+    # party.clear()
+    party.pop(message.chat.id, None)
     markup = types.ReplyKeyboardMarkup(
         resize_keyboard=True, 
         row_width=1, 
@@ -99,7 +102,8 @@ def start(message):
     content_types=['text']
     )
 def enter_men(message):
-    party['duration'] = 'long' if message.text == 'Больше 5 часов' else 'short'
+    party[message.chat.id] = {}
+    party[message.chat.id]['duration'] = 'long' if message.text == 'Больше 5 часов' else 'short'
     text = """
     \n
     Введите количество мужчин 👨
@@ -110,13 +114,13 @@ def enter_men(message):
 @bot.message_handler(
     func=lambda message: (
         message.text.isdigit() 
-        and party.get('men') is None 
-        and party.get('duration') is not None
+        and party[message.chat.id].get('men') is None 
+        and party[message.chat.id].get('duration') is not None
         ), 
     content_types=['text']
     )
 def enter_women(message):
-    party['men'] = int(message.text)
+    party[message.chat.id]['men'] = int(message.text)
     text = """
     \n
     Введите количество женщин 👩
@@ -127,14 +131,14 @@ def enter_women(message):
 @bot.message_handler(
     func=lambda message: (
         message.text.isdigit() 
-        and party.get('women') is None 
-        and party.get('men') is not None 
-        and party.get('duration') is not None
+        and party[message.chat.id].get('women') is None 
+        and party[message.chat.id].get('men') is not None 
+        and party[message.chat.id].get('duration') is not None
         ), 
     content_types=['text']
     )
 def get_calculation(message):
-    party['women'] = int(message.text)
+    party[message.chat.id]['women'] = int(message.text)
 
     markup = types.ReplyKeyboardMarkup(
         resize_keyboard=True, 
@@ -143,7 +147,7 @@ def get_calculation(message):
     again_btn = types.KeyboardButton('Сделать новый расчет 🔁')
     markup.add(again_btn)
 
-    bot.send_message(message.chat.id, main(party=party, cfg=config), reply_markup=markup)
+    bot.send_message(message.chat.id, main(party_dict=party[message.chat.id], cfg=config), reply_markup=markup)
 
 # Again Calculation
 @bot.message_handler(
@@ -155,4 +159,5 @@ def start_again(message):
 
 if __name__ == "__main__":
 
+    print("Bot has been started")
     bot.infinity_polling()

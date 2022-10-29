@@ -1,2 +1,3 @@
 .env
+pricer.py
 __pycache__/*

@@ -1,4 +1,6 @@
+import json
 from math import ceil
+import datetime, time
 
 
 def get_meat(basis, body_type='m', duration='short'):
@@ -81,4 +83,41 @@ def party_dict_convert(party_dict: dict):
     man_dict.update(woman_dict)
     
     return man_dict
+
+def write_json(json_message, input_dict, output_dict, filename='log.json'):
+    with open(filename,'r+') as file:
+          # First we load existing data into a dict.
+        file_data = json.load(file)
+        # Join new_data with file_data inside emp_details
+        mess_id = json_message['message_id']
+
+        file_data['message_id'][mess_id] = {}
+        file_data['message_id'][mess_id]['user'] = {}
+        file_data['message_id'][mess_id]['user']['user_id'] = json_message['from']['id']
+        file_data['message_id'][mess_id]['user']['first_name'] = json_message['from']['first_name']
+        file_data['message_id'][mess_id]['user']['last_name'] = json_message['from']['last_name']
+        file_data['message_id'][mess_id]['user']['username'] = json_message['from']['username']
+        file_data['message_id'][mess_id]['user']['language_code'] = json_message['from']['language_code']
+        file_data['message_id'][mess_id]['user']['is_bot'] = json_message['from']['is_bot']
+        file_data['message_id'][mess_id]['user']['date'] = str(
+            (datetime.datetime.utcfromtimestamp(json_message['date']) + datetime.timedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')
+            ) 
+
+        file_data['message_id'][mess_id]['input'] = input_dict
+        file_data['message_id'][mess_id]['output'] = output_dict         
+        # Sets file's current position at offset.
+        file.seek(0)
+        # convert back to json.
+        json.dump(file_data, file, indent = 4)
+
+if __name__ == "__main__":
+    import os
+
+    if not os.path.exists('log.json'):
+        # Writing to sample.json
+        with open("log.json", "w") as f:
+            f.write(json.dumps({'message_id': {}}, indent=4))
+            f.close()
+
+
     

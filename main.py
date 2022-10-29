@@ -15,57 +15,60 @@ bot = telebot.TeleBot(TOKEN)
 with open(CONFIG_PATH, "r") as stream:
     config = yaml.safe_load(stream)
 
+if not os.path.exists('log.json'):
+    with open("log.json", "w") as f:
+        f.write(json.dumps({'message_id': {}}, indent=4))
+        f.close()
+
 party = dict()
 
 def main(party_dict, cfg=config):
 
-    meat, cucumber, tomato, potato, bread, sauce = (0, 0, 0, 0, 0, 0)
+    products = {
+        'meat': 0,
+        'cucumber': 0,
+        'tomato': 0,
+        'potato': 0,
+        'bread': 0,
+        'sauce': 0,
+        'coal': 0
+    }
+    # meat, cucumber, tomato, potato, bread, sauce = (0, 0, 0, 0, 0, 0)
 
     if party_dict['men'] + party_dict['women'] == 0:
         return '🤨🤨🤨 Эмм... 😑😑😑'
 
     for key, value in party_dict_convert(party_dict).items():
 
-        meat     += get_meat(cfg[value]['MEAT'], duration=party_dict['duration'])
-        cucumber += get_cucumber(cfg[value]['CUCUMBER'], duration=party_dict['duration'])
-        tomato   += get_tomato(cfg[value]['TOMATO'], duration=party_dict['duration'])
-        potato   += get_potato(cfg[value]['POTATO'], duration=party_dict['duration'])
-        bread    += get_bread(cfg[value]['BREAD'], duration=party_dict['duration'])
-        sauce    += get_sauce(cfg[value]['SAUCE'], duration=party_dict['duration'])
-
-    # print(
-    #     f"""
-    #     meat: {meat}
-    #     cucumber: {cucumber}
-    #     tomato: {tomato}
-    #     potato: {potato}
-    #     bread: {bread}
-    #     sauce: {sauce}
-    #     """
-    #     )
+        products['meat']     += get_meat(cfg[value]['MEAT'], duration=party_dict['duration'])
+        products['cucumber'] += get_cucumber(cfg[value]['CUCUMBER'], duration=party_dict['duration'])
+        products['tomato']   += get_tomato(cfg[value]['TOMATO'], duration=party_dict['duration'])
+        products['potato']   += get_potato(cfg[value]['POTATO'], duration=party_dict['duration'])
+        products['bread']    += get_bread(cfg[value]['BREAD'], duration=party_dict['duration'])
+        products['sauce']    += get_sauce(cfg[value]['SAUCE'], duration=party_dict['duration'])
     
-    print(party)
+    print(party_dict)
 
-    meat     = convert_meat(meat)
-    cucumber = convert_cucumber(cucumber)
-    tomato   = convert_tomato(tomato)
-    potato   = convert_potato(potato)
-    bread    = convert_bread(bread)
-    sauce    = convert_sauce(sauce)
-    coal     = convert_coal(get_coal(cfg['COAL'], meat))
+    products['meat']     = convert_meat(products['meat'])
+    products['cucumber'] = convert_cucumber(products['cucumber'])
+    products['tomato']   = convert_tomato(products['tomato'])
+    products['potato']   = convert_potato(products['potato'])
+    products['bread']    = convert_bread(products['bread'])
+    products['sauce']    = convert_sauce(products['sauce'])
+    products['coal']     = convert_coal(get_coal(cfg['COAL'], products['meat']))
 
     output = f"""
     Твоя порция:
-    🥩 Количество мяса: {meat:.1f} (кг)
-    🥒 Количество огурцов: {cucumber:.1f} (кг)
-    🍅 Количество помидоров: {tomato:.1f} (кг)
-    🥔 Количество картофеля: {potato:.1f} (кг)
-    🍞 Количество хлеба: {bread:.0f} (шт)
-    🥫 Количество соуса: {sauce:.0f} (шт)
-    🪵 Количество угля: {coal:.1f} (кг)
+    🥩 Количество мяса: {products['meat']:.1f} (кг)
+    🥒 Количество огурцов: {products['cucumber']:.1f} (кг)
+    🍅 Количество помидоров: {products['tomato']:.1f} (кг)
+    🥔 Количество картофеля: {products['potato']:.1f} (кг)
+    🍞 Количество хлеба: {products['bread']:.0f} (шт)
+    🥫 Количество соуса: {products['sauce']:.0f} (шт)
+    🪵 Количество угля: {products['coal']:.1f} (кг)
     """
 
-    return output
+    return output, party_dict, products
 
 # Handle help command
 @bot.message_handler(commands=['help'])
@@ -80,7 +83,7 @@ def help(message):
 # Handle duration
 @bot.message_handler(commands=['start'])
 def start(message):
-    # party.clear()
+    print(dict(message.json))
     party.pop(message.chat.id, None)
     markup = types.ReplyKeyboardMarkup(
         resize_keyboard=True, 
@@ -150,7 +153,9 @@ def get_calculation(message):
     again_btn = types.KeyboardButton('Сделать новый расчет 🔁')
     markup.add(again_btn)
 
-    bot.send_message(message.chat.id, main(party_dict=party[message.chat.id], cfg=config), reply_markup=markup)
+    results = main(party_dict=party[message.chat.id], cfg=config)
+    bot.send_message(message.chat.id, results[0], reply_markup=markup)
+    write_json(dict(message.json), results[1], results[2], filename='log.json')
 
 # Again Calculation
 @bot.message_handler(

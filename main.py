@@ -83,7 +83,7 @@ def help(message):
 # Handle duration
 @bot.message_handler(commands=['start'])
 def start(message):
-    print(dict(message.json))
+    # print(dict(message.json))
     party.pop(message.chat.id, None)
     markup = types.ReplyKeyboardMarkup(
         resize_keyboard=True, 

@@ -93,12 +93,12 @@ def write_json(json_message, input_dict, output_dict, filename='log.json'):
 
         file_data['message_id'][mess_id] = {}
         file_data['message_id'][mess_id]['user'] = {}
-        file_data['message_id'][mess_id]['user']['user_id'] = json_message['from']['id']
-        file_data['message_id'][mess_id]['user']['first_name'] = json_message['from']['first_name']
-        file_data['message_id'][mess_id]['user']['last_name'] = json_message['from']['last_name']
-        file_data['message_id'][mess_id]['user']['username'] = json_message['from']['username']
-        file_data['message_id'][mess_id]['user']['language_code'] = json_message['from']['language_code']
-        file_data['message_id'][mess_id]['user']['is_bot'] = json_message['from']['is_bot']
+        file_data['message_id'][mess_id]['user']['user_id'] = json_message['from'].get('id', "")
+        file_data['message_id'][mess_id]['user']['first_name'] = json_message['from'].get('first_name', "")
+        file_data['message_id'][mess_id]['user']['last_name'] = json_message['from'].get('last_name', "")
+        file_data['message_id'][mess_id]['user']['username'] = json_message['from'].get('username', "")
+        file_data['message_id'][mess_id]['user']['language_code'] = json_message['from'].get('language_code', "")
+        file_data['message_id'][mess_id]['user']['is_bot'] = json_message['from'].get('is_bot', "")
         file_data['message_id'][mess_id]['user']['date'] = str(
             (datetime.datetime.utcfromtimestamp(json_message['date']) + datetime.timedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')
             ) 
@@ -111,13 +111,11 @@ def write_json(json_message, input_dict, output_dict, filename='log.json'):
         json.dump(file_data, file, indent = 4)
 
 if __name__ == "__main__":
-    import os
+    t = {'qwerty': 1, 'zxcv': 2}
 
-    if not os.path.exists('log.json'):
-        # Writing to sample.json
-        with open("log.json", "w") as f:
-            f.write(json.dumps({'message_id': {}}, indent=4))
-            f.close()
+    print(t.get('qwerty'))
+    print(t.get('asdf'))
+
 
 
     

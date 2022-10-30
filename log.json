@@ -1,0 +1,29 @@
+{
+    "message_id": {
+        "1842": {
+            "user": {
+                "user_id": 573239115,
+                "first_name": "leshka",
+                "last_name": "zaharov",
+                "username": "Zagerd",
+                "language_code": "en",
+                "is_bot": false,
+                "date": "2022-10-30 14:53:46"
+            },
+            "input": {
+                "duration": "long",
+                "men": 2,
+                "women": 3
+            },
+            "output": {
+                "meat": 2.0,
+                "cucumber": 0.9,
+                "tomato": 0.6,
+                "potato": 1.2,
+                "bread": 1,
+                "sauce": 1,
+                "coal": 1
+            }
+        }
+    }
+}
